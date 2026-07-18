@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "noImplicitAny": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "sourceMap": true,
+      "rootDir": "./src",
+      "outDir": "./scripts",
+      "strict": false
+    },
+    "include": ["src/**/*"],
+    "exclude": ["**/*.spec.ts"]
+}

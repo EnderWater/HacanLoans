@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+.player-card {
+    @apply rounded-lg bg-gray-700 shadow-lg overflow-hidden;
+}
+
+.player-card-header {
+    @apply border-b border-gray-600 p-4;
+}
+
+.player-card-header h2 {
+    @apply text-xl font-semibold;
+}
+
+.player-card-header h3 {
+    @apply text-sm text-gray-400;
+}
+
+.player-card-body {
+    @apply space-y-2 p-4;
+}
+
+.player-card-footer {
+    @apply border-t border-gray-600 p-4;
+}
+
+.player-card-header {
+    @apply flex items-center justify-between border-b border-gray-600 p-4;
+}
+
+.player-card-edit-button {
+    @apply rounded bg-gray-600 px-3 py-1 text-sm text-white hover:bg-gray-500;
+}

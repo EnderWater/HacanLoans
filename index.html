@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hacan Loans</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="./scripts/scripts.js"></script>
+</head>
+
+<body class="bg-gray-900 text-gray-100">
+    <main class="max-w-6xl min-h-screen mx-auto bg-gray-800 p-8">
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <h1 class="text-4xl font-bold">Hacan Loans</h1>
+        
+                <button id="hamburger-stack" class="sm:hidden">
+                    <img
+                        src="./images/Hamburger_icon.svg.webp"
+                        alt="Menu"
+                        class="w-10"
+                    />
+                </button>
+        
+                <div class="hidden sm:flex sm:flex-row sm:gap-3">
+                    <button
+                        id="add-player-button"
+                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold hover:bg-amber-400 transition">
+                        Add Player
+                    </button>
+
+                    <button
+                        id="add-payment-button"
+                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold hover:bg-amber-400 transition">
+                        Add Payment
+                    </button>
+        
+                    <button
+                        id="update-round-button"
+                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold hover:bg-amber-400 transition">
+                        Update Round
+                    </button>
+                </div>
+            </div>
+        
+            <div
+                id="mobile-menu"
+                class="hidden mt-4 rounded-lg bg-amber-500 shadow-lg sm:hidden"
+            >
+                <button
+                    id="mobile-add-player-button"
+                    class="block w-full px-4 py-3 text-left rounded-t-lg hover:bg-amber-700"
+                >
+                    Add Player
+                </button>
+
+                <button
+                    id="mobile-add-payment-button"
+                    class="block w-full px-4 py-3 text-left rounded-b-lg hover:bg-amber-700"
+                >
+                    Add Payment
+                </button>
+        
+                <button
+                    id="mobile-update-round-button"
+                    class="block w-full px-4 py-3 text-left rounded-b-lg hover:bg-amber-700"
+                >
+                    Update Round
+                </button>
+            </div>
+        </header>
+
+        <p id="current-round">Current round: </p>
+        <hr class="mb-4">
+
+        <!-- Player boxes will be written here -->
+        <div id="player-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        </div>
+
+        <footer class="mt-8"></footer>
+    </main>
+</body>
+
+</html>
