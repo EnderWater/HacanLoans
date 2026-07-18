@@ -102,7 +102,7 @@ export class App {
                 <div>
                     <h2>${player.name}</h2>
                     <div class="flex flex-row items-center gap-2">
-                        <img src="../images/${player.faction.imageSrc}" class="w-10">
+                        <img src="./images/${player.faction.imageSrc}" class="w-10">
                         <h3>${player.faction.toString()}</h3>
                     </div>
                 </div>
@@ -353,12 +353,16 @@ export class App {
                     )
                 };
 
+                const isLoanDataValid = updatedPlayer.loanAmount > 0 && updatedPlayer.loanRound > 0 && updatedPlayer.loanPercentage > 0;
+
                 if (isEdit && player) {
                     this.playerManager.editPlayer(player.id, updatedPlayer.name, updatedPlayer.faction, player.loanId);
-                    if (this.loanManager.loanExists(player.id)) {
+                    const loanExists = this.loanManager.loanExists(player.id);
+                    if (loanExists) {
                         this.loanManager.editLoan(player.loanId, updatedPlayer.loanAmount, updatedPlayer.loanRound, updatedPlayer.loanPercentage, this.currentRound);
                     }
-                    else {
+                    else if (!loanExists && isLoanDataValid)
+                    {
                         const newLoan = this.loanManager.addLoan(player.id, updatedPlayer.loanAmount, updatedPlayer.loanRound, updatedPlayer.loanPercentage, this.currentRound);
                         this.playerManager.editPlayer(player.id, player.name, player.faction.factionType, newLoan.id)
                     }
@@ -367,14 +371,10 @@ export class App {
                     // Create the new player first
                     const player = this.playerManager.addPlayer(updatedPlayer.name, updatedPlayer.faction, 0);
 
-                    if (!player) return;
-
-                    // Then, create their loan
-                    const loan = this.loanManager.addLoan(player.id, updatedPlayer.loanAmount,
-                        updatedPlayer.loanRound, updatedPlayer.loanPercentage, this.currentRound);
-
-                    // Lastly, update the player's loanId
-                    this.playerManager.editPlayer(player.id, player.name, player.faction.factionType, loan.id);
+                    if (player && isLoanDataValid) {
+                        updatedPlayer.loanAmount > 0 
+                        && updatedPlayer.loanRound > 0 && updatedPlayer.loanPercentage > 0
+                    }
                 }
 
                 this.drawPlayerBoxes();
