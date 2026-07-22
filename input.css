@@ -29,5 +29,5 @@
 }
 
 .player-card-edit-button {
-    @apply rounded bg-gray-600 px-3 py-1 text-sm text-white hover:bg-gray-500;
+    @apply rounded bg-gray-600 px-3 py-1 text-sm text-white hover:bg-gray-500 hover:cursor-pointer;
 }

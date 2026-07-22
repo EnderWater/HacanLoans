@@ -8,7 +8,6 @@ export class Player {
         this._id = obj.id;
         this._name = obj.name;
         this._faction = new Faction(obj.faction);
-        this._loanId = obj.loanId;
     }
     get id() {
         return this._id;
@@ -25,16 +24,9 @@ export class Player {
     set faction(value) {
         this._faction = value;
     }
-    get loanId() {
-        return this._loanId;
-    }
-    set loanId(value) {
-        this._loanId = value;
-    }
-    update(name, faction, loanId) {
+    update(name, faction) {
         this.name = name;
         this.faction = new Faction(faction);
-        this.loanId = loanId;
     }
 }
 //# sourceMappingURL=Player.js.map

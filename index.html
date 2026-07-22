@@ -7,8 +7,6 @@
 
     <title>Hacan Loans</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="./scripts/scripts.js"></script>
 </head>
@@ -30,19 +28,29 @@
                 <div class="hidden sm:flex sm:flex-row sm:gap-3">
                     <button
                         id="add-player-button"
-                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold hover:bg-amber-400 transition">
+                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold 
+                        hover:bg-amber-400 hover:cursor-pointer transition">
                         Add Player
                     </button>
 
                     <button
+                        id="add-loan-button"
+                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold 
+                        hover:bg-amber-400 hover:cursor-pointer transition">
+                        Add Loan
+                    </button>
+
+                    <button
                         id="add-payment-button"
-                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold hover:bg-amber-400 transition">
+                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold 
+                        hover:bg-amber-400 hover:cursor-pointer transition">
                         Add Payment
                     </button>
         
                     <button
                         id="update-round-button"
-                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold hover:bg-amber-400 transition">
+                        class="w-fit px-4 py-2 rounded bg-amber-500 whitespace-nowrap text-black font-semibold 
+                        hover:bg-amber-400 hover:cursor-pointer transition">
                         Update Round
                     </button>
                 </div>
@@ -57,6 +65,13 @@
                     class="block w-full px-4 py-3 text-left rounded-t-lg hover:bg-amber-700"
                 >
                     Add Player
+                </button>
+
+                <button
+                    id="mobile-add-loan-button"
+                    class="block w-full px-4 py-3 text-left rounded-b-lg hover:bg-amber-700"
+                >
+                    Add Loan
                 </button>
 
                 <button

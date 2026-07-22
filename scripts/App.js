@@ -39,8 +39,7 @@ export class App {
                 let roundOfLoan = 1;
                 roundOfLoan = roundOfLoan > 0 ? roundOfLoan : 1;
                 const loanPercentage = Math.random();
-                const loan = this.loanManager.addLoan(p.id, loanAmount, roundOfLoan, loanPercentage, this.currentRound);
-                p.loanId = loan.id;
+                this.loanManager.addLoan(p.id, loanAmount, roundOfLoan, loanPercentage, this.currentRound);
             });
         }
     }
@@ -61,7 +60,7 @@ export class App {
         let playerGridHtml = "";
         players.forEach(player => {
             let cardBody = "";
-            const loan = this.loanManager.loans.find(l => player.loanId == l.id);
+            const loan = this.loanManager.loans.find(l => player.id == l.playerId);
             if (loan)
                 cardBody = `<p>Loan Round: Round ${loan.loanRound}</p>
                 <p>Loan Amount: ${loan.loanAmount}</p>
@@ -102,8 +101,11 @@ export class App {
         const addPaymentButtonMobile = document.getElementById("mobile-add-payment-button");
         const changeRoundButton = document.getElementById("update-round-button");
         const changeRoundButtonMobile = document.getElementById("mobile-update-round-button");
+        const loanButton = document.getElementById("add-loan-button");
+        const loanButtonMobile = document.getElementById("mobile-add-loan-button");
         if (!addPlayer || !addPlayerMobile || !playerGrid || !hamburgerButton || !addPaymentButton
-            || !addPaymentButtonMobile || !changeRoundButton || !changeRoundButtonMobile)
+            || !addPaymentButtonMobile || !changeRoundButton || !changeRoundButtonMobile
+            || !loanButton || !loanButtonMobile)
             return;
         playerGrid.addEventListener("click", (event) => {
             const button = event.target
@@ -124,6 +126,9 @@ export class App {
         const roundModal = this.openRoundModal.bind(this);
         changeRoundButton.addEventListener("click", roundModal);
         changeRoundButtonMobile.addEventListener("click", roundModal);
+        const loanModal = this.openLoanModal.bind(this);
+        loanButton.addEventListener("click", loanModal);
+        loanButtonMobile.addEventListener("click", loanModal);
     }
     updateCurrentRound(newRound) {
         this.currentRound = newRound;
@@ -141,10 +146,10 @@ export class App {
         const modal = document.createElement("div");
         modal.className = "fixed inset-0 flex items-center justify-center bg-black/50 z-50";
         modal.innerHTML = `
-        <div class="relative bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md max-h-[90%] h-fit">
+        <div id="modal-box" class="relative bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md max-h-[90%] h-fit">
             <button
                 id="close-modal"
-                class="absolute top-4 right-4 text-gray-400 hover:text-white"
+                class="absolute top-4 right-4 w-7 h-7 text-gray-400 hover:text-white hover:cursor-pointer"
             >
                 ✕
             </button>
@@ -155,8 +160,13 @@ export class App {
         </div>
     `;
         document.body.appendChild(modal);
-        modal.querySelector("#close-modal")
-            ?.addEventListener("click", this.closeModal.bind(this));
+        modal.querySelector("#close-modal")?.addEventListener("click", this.closeModal.bind(this));
+        const modalBox = modal.querySelector("#modal-box");
+        modal?.addEventListener("click", event => {
+            const click = event;
+            if (!modalBox.contains(click.target))
+                this.closeModal();
+        });
         this.currentModal = modal;
         return modal;
     }
@@ -167,7 +177,7 @@ export class App {
     openPlayerModal(playerId) {
         const isEdit = !!playerId;
         const player = this.playerManager.players.find(p => p.id === playerId);
-        const loan = this.loanManager.loans.find(l => l.id === player?.loanId);
+        const loan = this.loanManager.loans.find(l => l.playerId === player?.id);
         const factionOptions = Object.entries(factionData)
             .map(([key, value]) => `
                 <option value="${key}" ${player?.faction.factionType === Number(key) ? "selected" : ""}>
@@ -255,28 +265,61 @@ export class App {
                         />
                     </div>
 
-                    <div class="flex justify-end gap-3 pt-4">
-                        <button
+                    <div class="flex justify-between gap-3 pt-4">
+                        <div class="flex flex-col gap-2">
+                            ${!isEdit ? "" : `<button
+                                type="button"
+                                id="delete-player"
+                                class="rounded bg-red-700 px-4 py-2 text-white hover:bg-gray-500 hover:cursor-pointer"
+                            >
+                                Delete Player
+                            </button>
+                            <button
                             type="button"
-                            id="cancel-player"
-                            class="rounded bg-gray-600 px-4 py-2 text-white hover:bg-gray-500"
+                            id="delete-loan"
+                            class="rounded bg-red-700 px-4 py-2 text-white hover:bg-gray-500 hover:cursor-pointer"
                         >
-                            Cancel
-                        </button>
+                            Delete Loan
+                        </button>`}
+                        </div>
+                        <div>
+                            <button
+                                type="button"
+                                id="cancel-player"
+                                class="rounded bg-gray-600 px-4 py-2 text-white hover:bg-gray-500 hover:cursor-pointer"
+                            >
+                                Cancel
+                            </button>
 
-                        <button
-                            type="submit"
-                            class="rounded bg-amber-500 px-4 py-2 font-semibold text-black hover:bg-amber-400"
-                        >
-                            ${isEdit ? "Update" : "Save"}
-                        </button>
+                            <button
+                                type="submit"
+                                class="rounded bg-amber-500 px-4 py-2 font-semibold text-black hover:bg-amber-400 hover:cursor-pointer"
+                            >
+                                ${isEdit ? "Update" : "Save"}
+                            </button>
+                        </div>
                     </div>
                 </form>
         `;
         this.openModal(innerHTML);
-        this.currentModal?.querySelector("#cancel-player")
-            ?.addEventListener("click", this.closeModal.bind(this));
-        this.currentModal?.querySelector("#player-form")
+        this.currentModal.querySelector("#delete-player")?.addEventListener("click", () => {
+            const confirm = window.confirm(`Would you like to delete the player ${player.name}?`);
+            if (!confirm)
+                return;
+            this.playerManager.removePlayer(player.id);
+            this.drawPlayerBoxes();
+            this.closeModal();
+        });
+        this.currentModal.querySelector("#delete-loan")?.addEventListener("click", () => {
+            const confirm = window.confirm(`Would you like to delete the loan for ${player.name}?`);
+            if (!confirm)
+                return;
+            this.loanManager.removeLoan(player.id);
+            this.drawPlayerBoxes();
+            this.closeModal();
+        });
+        this.currentModal.querySelector("#cancel-player")?.addEventListener("click", this.closeModal.bind(this));
+        this.currentModal.querySelector("#player-form")
             ?.addEventListener("submit", (event) => {
             event.preventDefault();
             const updatedPlayer = {
@@ -288,21 +331,20 @@ export class App {
             };
             const isLoanDataValid = updatedPlayer.loanAmount > 0 && updatedPlayer.loanRound > 0 && updatedPlayer.loanPercentage > 0;
             if (isEdit && player) {
-                this.playerManager.editPlayer(player.id, updatedPlayer.name, updatedPlayer.faction, player.loanId);
+                this.playerManager.editPlayer(player.id, updatedPlayer.name, updatedPlayer.faction);
                 const loanExists = this.loanManager.loanExists(player.id);
-                if (loanExists) {
-                    this.loanManager.editLoan(player.loanId, updatedPlayer.loanAmount, updatedPlayer.loanRound, updatedPlayer.loanPercentage, this.currentRound);
+                if (loanExists && isLoanDataValid) {
+                    this.loanManager.editLoan(player.id, updatedPlayer.loanAmount, updatedPlayer.loanRound, updatedPlayer.loanPercentage, this.currentRound);
                 }
                 else if (!loanExists && isLoanDataValid) {
-                    const newLoan = this.loanManager.addLoan(player.id, updatedPlayer.loanAmount, updatedPlayer.loanRound, updatedPlayer.loanPercentage, this.currentRound);
-                    this.playerManager.editPlayer(player.id, player.name, player.faction.factionType, newLoan.id);
+                    this.loanManager.addLoan(player.id, updatedPlayer.loanAmount, updatedPlayer.loanRound, updatedPlayer.loanPercentage, this.currentRound);
+                    this.playerManager.editPlayer(player.id, player.name, player.faction.factionType);
                 }
             }
-            else {
+            else if (!isEdit) {
                 const player = this.playerManager.addPlayer(updatedPlayer.name, updatedPlayer.faction, 0);
-                if (player && isLoanDataValid) {
-                    updatedPlayer.loanAmount > 0
-                        && updatedPlayer.loanRound > 0 && updatedPlayer.loanPercentage > 0;
+                if (player && isLoanDataValid && updatedPlayer.loanAmount > 0
+                    && updatedPlayer.loanRound > 0 && updatedPlayer.loanPercentage > 0) {
                 }
             }
             this.drawPlayerBoxes();
@@ -445,7 +487,109 @@ export class App {
             const player = this.playerManager.players.find(p => p.id === form.player);
             if (!player)
                 return;
-            this.loanManager.addPayment(form.payment, player.loanId, form.round);
+            this.loanManager.addPayment(form.payment, player.id, form.round);
+            this.drawPlayerBoxes();
+            this.closeModal();
+        });
+    }
+    openLoanModal() {
+        const playerOptions = this.playerManager.players.map(p => `
+            <option value="${p.id}">
+                ${p.name}
+            </option>
+        `);
+        let innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-white">
+                Add Loan
+            </h2>
+        </div>
+
+        <form id="loan-form" class="space-y-4">
+            <div class="border-t border-gray-600 pt-4 mt-4">
+                <div>
+                    <label class="block text-sm text-gray-300 mb-1">
+                        Player
+                    </label>
+
+                    <select
+                        id="player-selection-loan"
+                        required
+                        class="w-full rounded bg-gray-700 border border-gray-600 px-3 py-2 text-white"
+                    >
+                        <option value="">Select player</option>
+                        ${playerOptions}
+                    </select>
+                </div>
+
+                <div class="mt-3">
+                    <label class="block text-sm text-gray-300 mb-1">
+                        Loan Amount
+                    </label>
+
+                    <input
+                        id="loan-amount"
+                        type="number"
+                        placeholder="0"
+                        value=""
+                        class="w-full rounded bg-gray-700 border border-gray-600 px-3 py-2 text-white"
+                    />
+                </div>
+
+                <div class="mt-3">
+                    <label class="block text-sm text-gray-300 mb-1">
+                        Loan Round
+                    </label>
+
+                    <input
+                        id="loan-round"
+                        type="number"
+                        placeholder="0"
+                        value="${this.currentRound}"
+                        class="w-full rounded bg-gray-700 border border-gray-600 px-3 py-2 text-white"
+                    />
+                </div>
+
+                <div class="mt-3">
+                    <label class="block text-sm text-gray-300 mb-1">
+                        Loan Percentage
+                    </label>
+
+                    <input
+                        id="loan-percentage"
+                        type="text"
+                        placeholder="0.33"
+                        value=""
+                        class="w-full rounded bg-gray-700 border border-gray-600 px-3 py-2 text-white"
+                    />
+                </div>
+
+                <div class="flex justify-end mt-4">
+                    <button
+                        type="button"
+                        id="add-loan"
+                        class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500 hover:cursor-pointer"
+                    >
+                        Add Loan
+                    </button>
+                </div>
+            </div>
+        </form>`;
+        const modal = this.openModal(innerHTML);
+        modal.querySelector("#add-loan")?.addEventListener("click", () => {
+            const form = {
+                playerId: Number(modal.querySelector("#player-selection-loan").value),
+                loan: Number(modal.querySelector("#loan-amount").value),
+                round: Number(modal.querySelector("#loan-round").value),
+                percentage: Number(modal.querySelector("#loan-percentage").value),
+            };
+            if (!form.loan || !form.playerId || !form.round || !form.percentage || Number.isNaN(form.playerId)
+                || form.loan <= 0 || form.round <= 0 || Number.isNaN(form.percentage) || form.percentage < 0)
+                return;
+            const player = this.playerManager.players.find(p => p.id === form.playerId);
+            if (!player)
+                return;
+            const loan = this.loanManager.addLoan(player.id, form.loan, form.round, form.percentage, this.currentRound);
             this.drawPlayerBoxes();
             this.closeModal();
         });

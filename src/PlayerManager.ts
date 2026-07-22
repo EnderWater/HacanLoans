@@ -32,7 +32,6 @@ export class PlayerManager {
                 id: p.id,
                 name: p.name,
                 faction: p.faction,
-                loanId: p.loanId,
             };
             
             return new Player(obj);
@@ -45,7 +44,6 @@ export class PlayerManager {
                 id: p.id,
                 name: p.name,
                 faction: p.faction.factionType,
-                loanId: p.loanId,
             };
         });
 
@@ -58,14 +56,12 @@ export class PlayerManager {
             id,
             name,
             faction,
-            loanId,
         });
 
         // If the name of the player isn't already in the array, add it
-        const playerExists = this.players.some(p => player.name === p.name);
         const factionExists = this.players.some(p => p.faction.equals(player.faction));
 
-        if (!playerExists && !factionExists) {
+        if (!factionExists) {
             this.players.push(player);
             this.savePlayers();
             return player;
@@ -74,25 +70,24 @@ export class PlayerManager {
             console.error("Cannot add the same player name or faction twice");
     }
 
-    public editPlayer(playerId: number, name: string, faction: FactionEnum, loanId: number) {
+    public editPlayer(playerId: number, name: string, faction: FactionEnum) {
         let player = this.players.find(p => p.id === playerId);
 
         if (player === undefined) return;
 
         // If the name of the player isn't already in the array, add it
-        const playerNameExists = this.players.some(p => p.name === player?.name && p.id !== player?.id);
         const factionExists = this.players.some(p => p.faction.equals(player?.faction) && p.id !== player?.id);
 
-        if (!playerNameExists && !factionExists) {
-            player.update(name, faction, loanId);
+        if (!factionExists) {
+            player.update(name, faction);
             this.savePlayers();
         }
         else
-            console.error("Cannot add the same player name or faction twice");
+            console.error("Cannot add the same faction twice");
     }
     
-    public removePlayer(player: Player) {
-        const index = this._players.findIndex(p => p === player || p.name == player.name);
+    public removePlayer(playerId: number) {
+        const index = this._players.findIndex(p => p.id === playerId);
         if (index === -1)
             return;
 

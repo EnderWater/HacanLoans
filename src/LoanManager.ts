@@ -93,8 +93,8 @@ export class LoanManager {
         return loan;
     }
 
-    public editLoan(loanId: number, loanAmount: number, loanRound: number, loanPercentage: number, currentRound: number) {
-        const loan = this.loans.find(l => l.id === loanId);
+    public editLoan(playerId: number, loanAmount: number, loanRound: number, loanPercentage: number, currentRound: number) {
+        const loan = this.loans.find(l => l.playerId === playerId);
         
         if (!loan) return;
 
@@ -106,8 +106,8 @@ export class LoanManager {
         this.saveLoans();
     }
 
-    public removeLoan(loanId: number) {
-        const loanIndex = this._loans.findIndex(l => l.id === loanId);
+    public removeLoan(playerId: number) {
+        const loanIndex = this._loans.findIndex(l => l.playerId === playerId);
         
         if (loanIndex === -1) return;
 
@@ -127,8 +127,8 @@ export class LoanManager {
         return max > 0 ? max + 1 : 1;
     }
 
-    public addPayment(payment: number, loanId: number, roundNumber: number) {
-        const loan = this._loans.find(l => l.id === loanId);
+    public addPayment(payment: number, playerId: number, roundNumber: number) {
+        const loan = this._loans.find(l => l.playerId === playerId);
         
         if (!loan) return;
 
